@@ -1,70 +1,89 @@
-import time
-import requests
+import os
+from http.server import HTTPServer, BaseHTTPRequestHandler
+import threading
+from telebot import TeleBot
 
-BOT_TOKEN = "8960435272:AAH67OLzLHOiqyBe0izLpmwvEVu-GjdJENc"
-CHANNEL_ID = -1004366871518
+# Render xatolik bermasligi uchun fon rejimida ishlaydigan veb-server
+class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+            self.send_response(200)
+                    self.end_headers()
+                            self.wfile.write(b"Bot 24/7 ishlamoqda!")
 
-MOVIES = {
-    "1": [2, 3, 4, 5, 6, 7, 8, 9, 10],  # Bu yerga kerakli post raqamlarini yozasiz
-    "2": [11, 12, 13, 14],
-    "100": [4, 5, 6]
-}
+                            def run_server():
+                                port = int(os.environ.get("PORT", 8080))
+                                    server = HTTPServer(('0.0.0.0', port), SimpleHTTPRequestHandler)
+                                        server.serve_forever()
 
-BASE_URL = f"https://api.telegram.org/bot{BOT_TOKEN}"
+                                        # Serverni fonda yurgizish
+                                        threading.Thread(target=run_server, daemon=True).start()
 
-def send_message(chat_id, text):
-    requests.post(f"{BASE_URL}/sendMessage", json={
-        "chat_id": chat_id,
-        "text": text
-    })
+                                        # --- TELEGRAM BOT KODI ---
+                                        BOT_TOKEN = "7963283259:AAGx1o5X3M4xN-9m2i92O0I0H6k1P2Q3R4S"
+                                        bot = TeleBot(BOT_TOKEN)
 
-def forward_message(chat_id, from_chat_id, message_id):
-    url = f"{BASE_URL}/forwardMessage"
-    data = {
-        "chat_id": chat_id,
-        "from_chat_id": from_chat_id,
-        "message_id": message_id
-    }
-    res = requests.post(url, json=data).json()
-    return res.get("ok", False)
+                                        # Kino kodlari va havolalari
+                                        MOVIES = {
+                                            "1": "https://t.me/c/2455589578/3",  # 1-kod uchun havola
+                                                "2": "https://t.me/c/2455589578/4",  # 2-kod uchun havola
+                                                }
 
-def get_updates(offset=None):
-    url = f"{BASE_URL}/getUpdates?timeout=30"
-    if offset:
-        url += f"&offset={offset}"
-    try:
-        response = requests.get(url, timeout=35)
-        return response.json().get("result", [])
-    except Exception:
-        return []
+                                                @bot.message_handler(commands=['start'])
+                                                def send_welcome(message):
+                                                    bot.reply_to(message, "Xush kelibsiz! Kino kodini yuboring (masalan: 1 yoki 2):")
 
-print("Bot muvaffaqiyatli ishga tushdi!")
+                                                    @bot.message_handler(func=lambda message: True)
+                                                    def handle_message(message):
+                                                        code = message.text.strip()
+                                                            if code in MOVIES:
+                                                                    bot.reply_to(message, f"Siz so'ragan kino havolasi:\n{MOVIES[code]}")
+                                                                        else:
+                                                                                bot.reply_to(message, "Kechirasiz, bunday kodli kino topilmadi.")
 
-last_update_id = None
+                                                                                print("Bot muvaffaqiyatli ishga tushdi...")
+                                                                                bot.infinity_polling()
+                                                                                import os
+                                                                                from http.server import HTTPServer, BaseHTTPRequestHandler
+                                                                                import threading
+                                                                                from telebot import TeleBot
 
-while True:
-    updates = get_updates(last_update_id)
-    for update in updates:
-        last_update_id = update["update_id"] + 1
-        
-        message = update.get("message")
-        if not message:
-            continue
-            
-        chat_id = message["chat"]["id"]
-        text = message.get("text", "").strip()
+                                                                                # Render xatolik bermasligi uchun fon rejimida ishlaydigan veb-server
+                                                                                class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
+                                                                                    def do_GET(self):
+                                                                                            self.send_response(200)
+                                                                                                    self.end_headers()
+                                                                                                            self.wfile.write(b"Bot 24/7 ishlamoqda!")
 
-        if text == "/start":
-            send_message(chat_id, "Assalomu alaykum! Kinoning kodini yuboring:")
-        elif text in MOVIES:
-            post_ids = MOVIES[text]
-            send_message(chat_id, f"Kino qismlari yuklanmoqda ({len(post_ids)} ta qism)... ⏳")
-            for post_id in post_ids:
-                success = forward_message(chat_id, CHANNEL_ID, post_id)
-                time.sleep(1)
-        elif text.isdigit():
-            success = forward_message(chat_id, CHANNEL_ID, int(text))
-            if not success:
-                send_message(chat_id, "Bunday kodli kino topilmadi! ❌")
+                                                                                                            def run_server():
+                                                                                                                port = int(os.environ.get("PORT", 8080))
+                                                                                                                    server = HTTPServer(('0.0.0.0', port), SimpleHTTPRequestHandler)
+                                                                                                                        server.serve_forever()
 
-    time.sleep(1)
+                                                                                                                        # Serverni fonda yurgizish
+                                                                                                                        threading.Thread(target=run_server, daemon=True).start()
+
+                                                                                                                        # --- TELEGRAM BOT KODI ---
+                                                                                                                        BOT_TOKEN = "7963283259:AAGx1o5X3M4xN-9m2i92O0I0H6k1P2Q3R4S"
+                                                                                                                        bot = TeleBot(BOT_TOKEN)
+
+                                                                                                                        # Kino kodlari va havolalari
+                                                                                                                        MOVIES = {
+                                                                                                                            "1": "https://t.me/c/2455589578/3",  # 1-kod uchun havola
+                                                                                                                                "2": "https://t.me/c/2455589578/4",  # 2-kod uchun havola
+                                                                                                                                }
+
+                                                                                                                                @bot.message_handler(commands=['start'])
+                                                                                                                                def send_welcome(message):
+                                                                                                                                    bot.reply_to(message, "Xush kelibsiz! Kino kodini yuboring (masalan: 1 yoki 2):")
+
+                                                                                                                                    @bot.message_handler(func=lambda message: True)
+                                                                                                                                    def handle_message(message):
+                                                                                                                                        code = message.text.strip()
+                                                                                                                                            if code in MOVIES:
+                                                                                                                                                    bot.reply_to(message, f"Siz so'ragan kino havolasi:\n{MOVIES[code]}")
+                                                                                                                                                        else:
+                                                                                                                                                                bot.reply_to(message, "Kechirasiz, bunday kodli kino topilmadi.")
+
+                                                                                                                                                                print("Bot muvaffaqiyatli ishga tushdi...")
+                                                                                                                                                                bot.infinity_polling()
+                                                                                                                                                                
