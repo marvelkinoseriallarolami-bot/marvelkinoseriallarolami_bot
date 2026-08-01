@@ -26,7 +26,7 @@ bot = telebot.TeleBot(BOT_TOKEN)
 MOVIES = {
     "1": [2, 3, 4, 5, 6, 7, 8, 9, 10],
     "2": [11, 12, 13, 14],
-    "100": [4, 5, 6]
+    "3": [15]
 }
 
 @bot.message_handler(commands=['start'])
