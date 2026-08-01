@@ -45,7 +45,7 @@ def handle_text(message):
     else:
         bot.reply_to(message, "Bunday kodli kino topilmadi.")
 
-if __name__ == "__main__":
-    bot.infinity_polling()
+if _
                                                 
 
+У
