@@ -18,7 +18,7 @@ def run_server():
 threading.Thread(target=run_server, daemon=True).start()
 
 # --- BOT KODI ---
-BOT_TOKEN = "8960435272:AAFHdgwCcueUnq5cLQ4O1w6D11bz4SqkYtE"
+BOT_TOKEN = "8960435272:AAEnFZT4NQrkEXjs0vjImqSZstcxNM_Agj8"
 CHANNEL_ID = -1004366871518
 
 bot = telebot.TeleBot(BOT_TOKEN)
