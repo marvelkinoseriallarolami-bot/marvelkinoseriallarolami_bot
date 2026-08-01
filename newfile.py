@@ -1,4 +1,4 @@
-import os
+Уimport os
 import threading
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import telebot
@@ -18,7 +18,7 @@ def run_server():
 threading.Thread(target=run_server, daemon=True).start()
 
 # --- BOT KODI ---
-BOT_TOKEN = "8960435272:AAH67oLzLHOiqyBe0izLpm"
+BOT_TOKEN = "8960435272:AAFHdgwCcueUnq5cLQ4O1w6D11bz4SqkYtE"
 CHANNEL_ID = -1004366871518
 
 bot = telebot.TeleBot(BOT_TOKEN)
