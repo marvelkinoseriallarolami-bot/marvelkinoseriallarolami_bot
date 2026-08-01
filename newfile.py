@@ -3,7 +3,7 @@ import threading
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import telebot
 
-# --- WEB SERVER (Render porti uchun) ---
+# --- WEB SERVER (Render uyquga ketmasligi uchun) ---
 class SimpleHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
@@ -18,20 +18,22 @@ def run_server():
 threading.Thread(target=run_server, daemon=True).start()
 
 # --- BOT KODI ---
-BOT_TOKEN = "8960435272:AAEnFZT4NQrkEXjs0vjImqSZstcxNM_Agj8"
+BOT_TOKEN = "8960435272:AAH67oLzLHOiqyBe0izLpm"
 CHANNEL_ID = -1004366871518
 
 bot = telebot.TeleBot(BOT_TOKEN)
 
+# Kinolar ro'yxati (kod va xabar ID'lari)
 MOVIES = {
     "1": [2, 3, 4, 5, 6, 7, 8, 9, 10],
     "2": [11, 12, 13, 14],
-    "3": [15]
+    "3": [77],
+    "100": [4, 5, 6]
 }
 
 @bot.message_handler(commands=['start'])
 def start_cmd(message):
-    bot.reply_to(message, "Xush kelibsiz! Kino kodini yuboring (masalan: 1):")
+    bot.reply_to(message, "Xush kelibsiz! Kino kodini yuboring:")
 
 @bot.message_handler(func=lambda msg: True)
 def handle_text(message):
@@ -45,7 +47,6 @@ def handle_text(message):
     else:
         bot.reply_to(message, "Bunday kodli kino topilmadi.")
 
-if _
-                                                
-
-У
+if __name__ == "__main__":
+    # Bot qotib qolmasligi va o'z-o'zidan tiklanishi uchun infinity_polling ishlatamiz
+    bot.infinity_polling(timeout=60, long_polling_timeout=60)
