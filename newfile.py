@@ -63,3 +63,25 @@ def handle_text(message):
 if __name__ == "__main__":
     # Bot qotib qolmasligi va o'z-o'zidan tiklanishi uchun infinity_polling ishlatamiz
     bot.infinity_polling(timeout=60, long_polling_timeout=60)
+    ADMIN_ID = 8735850351
+
+def save_user(user_id):
+    try:
+        with open("users.txt", "a+") as f:
+            f.seek(0)
+            users = f.read().splitlines()
+            if str(user_id) not in users:
+                f.write(f"{user_id}\n")
+    except Exception as e:
+        print(f"Xato: {e}")
+
+@bot.message_handler(commands=['stat'])
+def show_stats(message):
+    if message.chat.id == ADMIN_ID:
+        try:
+            with open("users.txt", "r") as f:
+                users = set(f.read().splitlines())
+            bot.send_message(message.chat.id, f"📊 Jami foydalanuvchilar: {len(users)} ta")
+        except FileNotFoundError:
+            bot.send_message(message.chat.id, "📊 Hozircha foydalanuvchilar yo'q.")
+
