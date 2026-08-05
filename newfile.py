@@ -45,7 +45,8 @@ MOVIES = {
     "17": [65],
     "18": [66, 67, 68, 69, 70, 71, 72, 73],
     "19": [75],
-    "20": [76, 77]
+    "20": [76, 77],
+    "21": [78, 79]
 }
 
 # Foydalanuvchini faylga yozib borish funksiyasi
