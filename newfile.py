@@ -21,21 +21,59 @@ threading.Thread(target=run_server, daemon=True).start()
 
 # --- BOT KODI ---
 BOT_TOKEN = "8960435272:AAFU3dzzcjc32r8Fj613TBpphD07EK2egnU"
-CHANNEL_ID = -1004366871518
-CHANNEL_URL = "https://t.me/pubgtdmturnirr"  # Kanalingiz havolasi
 ADMIN_ID = 8735850351
+
+# Baza kanali (kinolar сақланадиган канал)
+MOVIE_CHANNEL_ID = -1004366871518
+
+# MAJBURIY OBUNA KANALLARI RO'YXATI
+CHANNELS = [
+    {"id": -1004366871518, "url": "https://t.me/pubgtdmturnirr", "name": "1-Kanal"},
+    {"id": "@axmadxnv7", "url": "https://t.me/axmadxnv7", "name": "2-Kanal"},
+]
 
 bot = telebot.TeleBot(BOT_TOKEN)
 
 
-# --- OBUANAN TEKSHIRISH FUNKSIYASI ---
-def check_sub(user_id):
+# --- HAMMA KANALLARGA OBUNANI TEKSHIRISH ---
+def check_all_subs(user_id):
+    for ch in CHANNELS:
+        try:
+            status = bot.get_chat_member(ch["id"], user_id).status
+            if status not in ["member", "administrator", "creator"]:
+                return False
+        except Exception as e:
+            print(f"Tekshirishda xatolik ({ch['id']}): {e}")
+            return False
+    return True
+
+
+# Foydalanuvchini faylga yozib borish funksiyasi
+def save_user(user_id):
     try:
-        status = bot.get_chat_member(CHANNEL_ID, user_id).status
-        return status in ["member", "administrator", "creator"]
+        with open("users.txt", "a+") as f:
+            f.seek(0)
+            users = f.read().splitlines()
+            if str(user_id) not in users:
+                f.write(f"{user_id}\n")
     except Exception as e:
-        print(f"Tekshirishda xatolik: {e}")
-        return False
+        print(f"Xatolik: {e}")
+
+
+# Obuna bo'lish tugmalarini yaratish
+def sub_markup():
+    markup = telebot.types.InlineKeyboardMarkup()
+    for ch in CHANNELS:
+        btn_channel = telebot.types.InlineKeyboardButton(
+            text=f"📢 {ch['name']}ga obuna bo'lish", url=ch["url"]
+        )
+        markup.add(btn_channel)
+
+    btn_check = telebot.types.InlineKeyboardButton(
+        text="✅ Obunani tekshirish", callback_data="check_subscription"
+    )
+    markup.add(btn_check)
+    return markup
 
 
 # Kinolar ro'yxati
@@ -91,41 +129,15 @@ MOVIES = {
 }
 
 
-# Foydalanuvchini faylga yozib borish funksiyasi
-def save_user(user_id):
-    try:
-        with open("users.txt", "a+") as f:
-            f.seek(0)
-            users = f.read().splitlines()
-            if str(user_id) not in users:
-                f.write(f"{user_id}\n")
-    except Exception as e:
-        print(f"Xatolik: {e}")
-
-
-# Obuna bo'lish tugmalarini yaratish
-def sub_markup():
-    markup = telebot.types.InlineKeyboardMarkup()
-    btn_channel = telebot.types.InlineKeyboardButton(
-        text="📢 Kanalga obuna bo'lish", url=CHANNEL_URL
-    )
-    btn_check = telebot.types.InlineKeyboardButton(
-        text="✅ Obunani tekshirish", callback_data="check_subscription"
-    )
-    markup.add(btn_channel)
-    markup.add(btn_check)
-    return markup
-
-
 # /start buyrug'i
 @bot.message_handler(commands=["start"])
 def start_cmd(message):
     save_user(message.chat.id)
 
-    if not check_sub(message.chat.id):
+    if not check_all_subs(message.chat.id):
         bot.send_message(
             message.chat.id,
-            "⚠️ **Botdan foydalanish uchun avval kanalimizga obuna bo'ling!**",
+            "⚠️ **Botdan foydalanish uchun quyidagi barcha kanallarga obuna bo'ling!**",
             parse_mode="Markdown",
             reply_markup=sub_markup(),
         )
@@ -139,7 +151,7 @@ def start_cmd(message):
     func=lambda call: call.data == "check_subscription"
 )
 def callback_check(call):
-    if check_sub(call.from_user.id):
+    if check_all_subs(call.from_user.id):
         bot.delete_message(call.message.chat.id, call.message.message_id)
         bot.send_message(
             call.message.chat.id,
@@ -148,12 +160,12 @@ def callback_check(call):
     else:
         bot.answer_callback_query(
             call.id,
-            "❌ Siz hali kanalga obuna bo'lmadingiz!",
+            "❌ Siz hali barcha kanallarga obuna bo'lmadingiz!",
             show_alert=True,
         )
 
 
-# /stat buyrug'i (faqat siz uchun ishlaydi)
+# /stat buyrug'i
 @bot.message_handler(commands=["stat"])
 def show_stats(message):
     if message.chat.id == ADMIN_ID:
@@ -169,16 +181,15 @@ def show_stats(message):
             )
 
 
-# Kino kodlarini qabul qilish (har doim eng pastda turishi shart)
+# Kino kodlarini qabul qilish
 @bot.message_handler(func=lambda msg: True)
 def handle_text(message):
     save_user(message.chat.id)
 
-    # Foydalanuvchi kod yuborganda ham obunani tekshiradi
-    if not check_sub(message.chat.id):
+    if not check_all_subs(message.chat.id):
         bot.send_message(
             message.chat.id,
-            "⚠️ **Botdan foydalanish uchun avval kanalimizga obuna bo'ling!**",
+            "⚠️ **Botdan foydalanish uchun quyidagi barcha kanallarga obuna bo'ling!**",
             parse_mode="Markdown",
             reply_markup=sub_markup(),
         )
@@ -188,7 +199,7 @@ def handle_text(message):
     if code in MOVIES:
         for msg_id in MOVIES[code]:
             try:
-                bot.forward_message(message.chat.id, CHANNEL_ID, msg_id)
+                bot.forward_message(message.chat.id, MOVIE_CHANNEL_ID, msg_id)
             except Exception as e:
                 print(f"Xatolik: {e}")
     else:
