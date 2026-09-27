@@ -24,7 +24,6 @@ BOT_TOKEN = "8960435272:AAFU3dzzcjc32r8Fj613TBpphD07EK2egnU"
 ADMIN_ID = 8735850351
 
 # Baza kanali (kinolar saqlanadigan kanal)
-# MUHIM: Kanal ID'sini to'g'ri kiriting (masalan: -100 bilan boshlanuvchi 13 xonali ID)
 MOVIE_CHANNEL_ID = -1004366871518 
 
 # MAJBURIY OBUNA KANALLARI RO'YXATI (3 ta kanal)
@@ -36,6 +35,8 @@ CHANNELS = [
 
 bot = telebot.TeleBot(BOT_TOKEN)
 
+# Obuna tasdiqlanganini eslab qolish uchun lug'at (User ID: bool)
+verified_users = {}
 
 # --- HAMMA KANALLARGA OBUNANI TEKSHIRISH ---
 def check_all_subs(user_id):
@@ -137,6 +138,7 @@ def start_cmd(message):
     save_user(message.chat.id)
 
     if not check_all_subs(message.chat.id):
+        verified_users[message.chat.id] = False
         bot.send_message(
             message.chat.id,
             "⚠️ **Botdan foydalanish uchun quyidagi barcha kanallarga obuna bo'ling!**",
@@ -145,6 +147,7 @@ def start_cmd(message):
         )
         return
 
+    verified_users[message.chat.id] = True
     bot.reply_to(message, "Xush kelibsiz! Kino kodini yuboring:")
 
 
@@ -154,12 +157,14 @@ def start_cmd(message):
 )
 def callback_check(call):
     if check_all_subs(call.from_user.id):
+        verified_users[call.from_user.id] = True
         bot.delete_message(call.message.chat.id, call.message.message_id)
         bot.send_message(
             call.message.chat.id,
             "✅ Obuna tasdiqlandi! Endi kino kodini yuborishingiz mumkin:",
         )
     else:
+        verified_users[call.from_user.id] = False
         bot.answer_callback_query(
             call.id,
             "❌ Siz hali barcha kanallarga obuna bo'lmadingiz!",
@@ -188,7 +193,9 @@ def show_stats(message):
 def handle_text(message):
     save_user(message.chat.id)
 
+    # Obunani tekshirish
     if not check_all_subs(message.chat.id):
+        verified_users[message.chat.id] = False
         bot.send_message(
             message.chat.id,
             "⚠️ **Botdan foydalanish uchun quyidagi barcha kanallarga obuna bo'ling!**",
@@ -196,6 +203,14 @@ def handle_text(message):
             reply_markup=sub_markup(),
         )
         return
+
+    # Agar foydalanuvchi obuna bo'lgan bo'lsa va bu birinchi marta tasdiqlanayotgan bo'lsa
+    if not verified_users.get(message.chat.id, False):
+        verified_users[message.chat.id] = True
+        bot.send_message(
+            message.chat.id,
+            "✅ Obuna tasdiqlandi! Endi kino kodini yuborishingiz mumkin:",
+        )
 
     code = message.text.strip()
     if code in MOVIES:
