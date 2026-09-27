@@ -23,13 +23,15 @@ threading.Thread(target=run_server, daemon=True).start()
 BOT_TOKEN = "8960435272:AAFU3dzzcjc32r8Fj613TBpphD07EK2egnU"
 ADMIN_ID = 8735850351
 
-# Baza kanali (kinolar сақланадиган канал)
-MOVIE_CHANNEL_ID = -1004366871518
+# Baza kanali (kinolar saqlanadigan kanal)
+# MUHIM: Kanal ID'sini to'g'ri kiriting (masalan: -100 bilan boshlanuvchi 13 xonali ID)
+MOVIE_CHANNEL_ID = -1004366871518 
 
-# MAJBURIY OBUNA KANALLARI RO'YXATI
+# MAJBURIY OBUNA KANALLARI RO'YXATI (3 ta kanal)
 CHANNELS = [
-    {"id": -1004366871518, "url": "https://t.me/pubgtdmturnirr", "name": "1-Kanal"},
+    {"id": "@pubgtdmturnirr", "url": "https://t.me/pubgtdmturnirr", "name": "1-Kanal"},
     {"id": "@axmadxnv7", "url": "https://t.me/axmadxnv7", "name": "2-Kanal"},
+    {"id": "@Cinemauzbb", "url": "https://t.me/Cinemauzbb", "name": "3-Kanal"},
 ]
 
 bot = telebot.TeleBot(BOT_TOKEN)
