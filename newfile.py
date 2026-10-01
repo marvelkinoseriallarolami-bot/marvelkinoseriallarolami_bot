@@ -28,9 +28,8 @@ MOVIE_CHANNEL_ID = -1004366871518
 
 # MAJBURIY OBUNA KANALLARI RO'YXATI (3 ta kanal)
 CHANNELS = [
-    {"id": "@pubgtdmturnirr", "url": "https://t.me/pubgtdmturnirr", "name": "1-Kanal"},
-    {"id": "@axmadxnv7", "url": "https://t.me/axmadxnv7", "name": "2-Kanal"},
-    {"id": "@Cinemauzbb", "url": "https://t.me/Cinemauzbb", "name": "3-Kanal"},
+    {"id": "@axmadxnv7", "url": "https://t.me/axmadxnv7", "name": "1-Kanal"},
+    {"id": "@Cinemauzbb", "url": "https://t.me/Cinemauzbb", "name": "2-Kanal"},
 ]
 
 bot = telebot.TeleBot(BOT_TOKEN)
@@ -130,7 +129,7 @@ MOVIES = {
     "47": [129],
     "48": [130, 131, 132],
     "49": [133], 
-    "50": [134]
+    "50": [134], 
 }
 
 
